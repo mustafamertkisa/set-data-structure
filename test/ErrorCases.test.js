@@ -63,9 +63,12 @@ describe("SetDataStructure Contract", function () {
       it("Remove unadded wallet", async function () {
         const wallet = cedric.address;
 
-        await expect(
-          contractInstance.connect(owner).remove(wallet)
-        ).to.be.revertedWith("Wallet address does not exist");
+        await expect(contractInstance.connect(owner).remove(wallet))
+          .to.be.revertedWithCustomError(
+            contractInstance,
+            "WalletAddressDoesNotExist"
+          )
+          .withArgs(wallet);
       });
 
       it("Remove wallet when length of the array is 0", async function () {
@@ -87,9 +90,9 @@ describe("SetDataStructure Contract", function () {
     it("Get order with unadded wallet", async function () {
       const wallet = cedric.address;
 
-      await expect(
-        contractInstance.connect(owner).order(wallet)
-      ).to.be.revertedWith("Address not found");
+      await expect(contractInstance.connect(owner).order(wallet))
+        .to.be.revertedWithCustomError(contractInstance, "AddressNotFound")
+        .withArgs(wallet);
     });
   });
 });

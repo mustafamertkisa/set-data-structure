@@ -60,6 +60,18 @@ error WalletLengthIsNotEnough(uint256 walletLength)
 error InvalidBalance(address wallet, uint256 balance)
 ```
 
+### AddressNotFound
+
+```solidity
+error AddressNotFound(address wallet)
+```
+
+### WalletAddressDoesNotExist
+
+```solidity
+error WalletAddressDoesNotExist(address wallet)
+```
+
 ### add
 
 ```solidity

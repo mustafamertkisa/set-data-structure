@@ -32,6 +32,8 @@ contract SetDataStructure is AccessControl, ReentrancyGuard {
     error WalletAlreadyExist(address wallet);
     error WalletLengthIsNotEnough(uint256 walletLength);
     error InvalidBalance(address wallet, uint256 balance);
+    error AddressNotFound(address wallet);
+    error WalletAddressDoesNotExist(address wallet);
 
     /*//////////////////////////////////////////////////////////////
                             EXTERNAL FUNCTIONS
@@ -68,7 +70,7 @@ contract SetDataStructure is AccessControl, ReentrancyGuard {
         uint256 i = 0;
         while (wallets[i] != _wallet) {
             if (i == (wallets.length - 1)) {
-                revert("Wallet address does not exist");
+                revert WalletAddressDoesNotExist(_wallet);
             }
             i++;
         }
@@ -107,7 +109,7 @@ contract SetDataStructure is AccessControl, ReentrancyGuard {
                 return i;
             }
         }
-        revert("Address not found");
+        revert AddressNotFound(_wallet);
     }
 
     /// @notice The mapped value of the given address
