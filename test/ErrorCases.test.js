@@ -49,6 +49,28 @@ describe("SetDataStructure Contract", function () {
           .to.be.revertedWithCustomError(contractInstance, "InvalidBalance")
           .withArgs(wallet, balance);
       });
+
+      it("Add wallet with non-admin bob", async function () {
+        const wallet = alice.address;
+        const balance = web3.utils.toWei("3");
+
+        await expect(contractInstance.connect(bob).add(wallet, balance)).to.be
+          .reverted;
+      });
+
+      it("Add wallet when the state of contract is paused", async function () {
+        const wallet = alice.address;
+        const balance = web3.utils.toWei("3");
+        await contractInstance.connect(owner).pause(true);
+        expect(await contractInstance.paused()).to.equal(true);
+
+        await expect(
+          contractInstance.connect(owner).add(wallet, balance)
+        ).to.be.revertedWith("Pausable: paused");
+
+        await contractInstance.connect(owner).pause(false);
+        expect(await contractInstance.paused()).to.equal(false);
+      });
     });
 
     describe("Remove Method", () => {
@@ -84,6 +106,31 @@ describe("SetDataStructure Contract", function () {
             "WalletLengthIsNotEnough"
           )
           .withArgs(0);
+      });
+
+      it("Remove wallet with non-admin alice", async function () {
+        const wallet = bob.address;
+        const balance = web3.utils.toWei("1");
+
+        await expect(contractInstance.connect(owner).add(wallet, balance))
+          .to.emit(contractInstance, "WalletAdded")
+          .withArgs(wallet, balance);
+
+        await expect(contractInstance.connect(alice).remove(wallet)).to.be
+          .reverted;
+      });
+
+      it("Remove wallet when the state of contract is paused", async function () {
+        const wallet = bob.address;
+        await contractInstance.connect(owner).pause(true);
+        expect(await contractInstance.paused()).to.equal(true);
+
+        await expect(
+          contractInstance.connect(owner).remove(wallet)
+        ).to.be.revertedWith("Pausable: paused");
+
+        await contractInstance.connect(owner).pause(false);
+        expect(await contractInstance.paused()).to.equal(false);
       });
     });
 
