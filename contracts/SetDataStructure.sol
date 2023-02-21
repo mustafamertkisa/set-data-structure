@@ -46,7 +46,7 @@ contract SetDataStructure is AccessControl, ReentrancyGuard {
     function add(
         address _wallet,
         uint256 _balance
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
         // Can not add 0x address
         if (_wallet == address(0x0)) revert InvalidAddress(_wallet);
         // Can not existing wallet
@@ -62,7 +62,9 @@ contract SetDataStructure is AccessControl, ReentrancyGuard {
     /// @dev To use this function must have the default admin role
     /// @param _wallet Requested wallet address
 
-    function remove(address _wallet) external onlyRole(DEFAULT_ADMIN_ROLE) {
+    function remove(
+        address _wallet
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
         // Can not add 0x address
         if (_wallet == address(0x0)) revert InvalidAddress(_wallet);
         // Can not remove all wallets
