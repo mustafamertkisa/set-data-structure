@@ -78,9 +78,9 @@ error WalletAddressDoesNotExist(address wallet)
 function add(address _wallet, uint256 _balance) external
 ```
 
-Adds wallet and balance
+Only admin can adds wallet and balance
 
-_To use this function must have the default admin role_
+_Works when contract status is not pause and includes reentrancy guard_
 
 #### Parameters
 
@@ -95,9 +95,9 @@ _To use this function must have the default admin role_
 function remove(address _wallet) external
 ```
 
-Remove wallet
+Only admin can remove wallet
 
-_To use this function must have the default admin role_
+_Works when contract status is not pause and includes reentrancy guard_
 
 #### Parameters
 
@@ -178,4 +178,18 @@ The mapped value of the given address
 | Name | Type | Description |
 | ---- | ---- | ----------- |
 | [0] | uint256 | value For this map this value is the balance |
+
+### pause
+
+```solidity
+function pause(bool val) public
+```
+
+Only admin can change the pause state of the contract
+
+#### Parameters
+
+| Name | Type | Description |
+| ---- | ---- | ----------- |
+| val | bool | true if pause, false if unpause |
 
