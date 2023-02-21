@@ -3,11 +3,12 @@ pragma solidity ^0.8.17;
 
 import "@openzeppelin/contracts/access/AccessControl.sol";
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
+import "@openzeppelin/contracts/security/Pausable.sol";
 
 /// @title Set Data Structure
 /// @author Mustafa Mert Kisa
 
-contract SetDataStructure is AccessControl, ReentrancyGuard {
+contract SetDataStructure is AccessControl, ReentrancyGuard, Pausable {
     address[] public wallets;
     /// @notice Map balances to wallets
     mapping(address => uint256) public balance;
@@ -39,14 +40,14 @@ contract SetDataStructure is AccessControl, ReentrancyGuard {
                             EXTERNAL FUNCTIONS
     //////////////////////////////////////////////////////////////*/
 
-    /// @notice Adds wallet and balance
-    /// @dev To use this function must have the default admin role
+    /// @notice Only admin can adds wallet and balance
+    /// @dev Works when contract status is not pause and includes reentrancy guard
     /// @param _wallet Requested wallet address
     /// @param _balance Requested balance
     function add(
         address _wallet,
         uint256 _balance
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused nonReentrant {
         // Can not add 0x address
         if (_wallet == address(0x0)) revert InvalidAddress(_wallet);
         // Can not existing wallet
@@ -58,13 +59,13 @@ contract SetDataStructure is AccessControl, ReentrancyGuard {
         emit WalletAdded(_wallet, _balance);
     }
 
-    /// @notice Remove wallet
-    /// @dev To use this function must have the default admin role
+    /// @notice Only admin can remove wallet
+    /// @dev Works when contract status is not pause and includes reentrancy guard
     /// @param _wallet Requested wallet address
 
     function remove(
         address _wallet
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) nonReentrant {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused nonReentrant {
         // Can not add 0x address
         if (_wallet == address(0x0)) revert InvalidAddress(_wallet);
         // Can not remove all wallets
@@ -119,5 +120,15 @@ contract SetDataStructure is AccessControl, ReentrancyGuard {
     /// @return value For this map this value is the balance
     function valueOfKey(address _wallet) public view returns (uint256) {
         return balance[_wallet];
+    }
+
+    /// @notice Only admin can change the pause state of the contract
+    /// @param val true if pause, false if unpause
+    function pause(bool val) public onlyRole(DEFAULT_ADMIN_ROLE) {
+        if (val == true) {
+            _pause();
+            return;
+        }
+        _unpause();
     }
 }

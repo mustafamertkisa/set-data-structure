@@ -88,5 +88,21 @@ describe("SetDataStructure Contract", function () {
       const included = await contractInstance.connect(owner).existence(wallet);
       expect(included).to.equal(false);
     });
+
+    it("Pause the contract", async function () {
+      const state = true;
+      await contractInstance.connect(owner).pause(state);
+
+      const paused = await contractInstance.paused();
+      expect(paused).to.equal(state);
+    });
+
+    it("Unpause the contract", async function () {
+      const state = false;
+      await contractInstance.connect(owner).pause(state);
+
+      const paused = await contractInstance.paused();
+      expect(paused).to.equal(state);
+    });
   });
 });
