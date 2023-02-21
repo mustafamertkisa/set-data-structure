@@ -141,5 +141,13 @@ describe("SetDataStructure Contract", function () {
         .to.be.revertedWithCustomError(contractInstance, "AddressNotFound")
         .withArgs(wallet);
     });
+
+    it("Pause with non-admin bob", async function () {
+      await expect(contractInstance.connect(bob).pause(true)).to.be.reverted;
+    });
+
+    it("Unpause with non-admin bob", async function () {
+      await expect(contractInstance.connect(bob).pause(false)).to.be.reverted;
+    });
   });
 });
