@@ -62,7 +62,6 @@ contract SetDataStructure is AccessControl, ReentrancyGuard, Pausable {
     /// @notice Only admin can remove wallet
     /// @dev Works when contract status is not pause and includes reentrancy guard
     /// @param _wallet Requested wallet address
-
     function remove(
         address _wallet
     ) external onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused nonReentrant {
