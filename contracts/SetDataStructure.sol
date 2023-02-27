@@ -12,6 +12,8 @@ contract SetDataStructure is AccessControl, ReentrancyGuard, Pausable {
     address[] public wallets;
     /// @notice Map balances to wallets
     mapping(address => uint256) public balance;
+    /// @notice Map balances to indexes
+    mapping(address => uint256) public index;
 
     /// @notice Sets the default admin role to msg.sender
     constructor() {
@@ -56,6 +58,7 @@ contract SetDataStructure is AccessControl, ReentrancyGuard, Pausable {
         if (_balance < 1) revert InvalidBalance(_wallet, _balance);
         wallets.push(_wallet);
         balance[_wallet] = _balance;
+        index[_wallet] = wallets.length - 1;
         emit WalletAdded(_wallet, _balance);
     }
 
@@ -69,19 +72,11 @@ contract SetDataStructure is AccessControl, ReentrancyGuard, Pausable {
         if (_wallet == address(0x0)) revert InvalidAddress(_wallet);
         // Can not remove all wallets
         if (wallets.length < 1) revert WalletLengthIsNotEnough(wallets.length);
-        uint256 i = 0;
-        while (wallets[i] != _wallet) {
-            if (i == (wallets.length - 1)) {
-                revert WalletAddressDoesNotExist(_wallet);
-            }
-            i++;
-        }
-        // Our desired value is now shifted as the last element of the array.
-        wallets[i] = wallets[wallets.length - 1];
+        uint256 i = index[_wallet];
+        delete wallets[i];
         // We override the address in the balance map
         balance[_wallet] = 0;
         // Remove the last wallet, since it's double present
-        wallets.pop();
         emit WalletRemoved(_wallet);
     }
 
