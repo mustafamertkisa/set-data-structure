@@ -67,16 +67,23 @@ contract SetDataStructure is AccessControl, ReentrancyGuard, Pausable {
     /// @param _wallet Requested wallet address
     function remove(
         address _wallet
-    ) external onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused nonReentrant {
+    ) external onlyRole(DEFAULT_ADMIN_ROLE) whenNotPaused {
         // Can not add 0x address
         if (_wallet == address(0x0)) revert InvalidAddress(_wallet);
         // Can not remove all wallets
         if (wallets.length < 1) revert WalletLengthIsNotEnough(wallets.length);
-        uint256 i = index[_wallet];
-        delete wallets[i];
+        uint256 i = 0;
+        while (wallets[i] != _wallet) {
+            if (i == (wallets.length - 1))
+                revert WalletAddressDoesNotExist(_wallet);
+            i++;
+        }
+        // Our desired value is now shifted as the last element of the array.
+        wallets[i] = wallets[wallets.length - 1];
         // We override the address in the balance map
         balance[_wallet] = 0;
         // Remove the last wallet, since it's double present
+        wallets.pop();
         emit WalletRemoved(_wallet);
     }
 
